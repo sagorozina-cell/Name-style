@@ -1,69 +1,117 @@
-/* ============================================================
-   NameForge — UI wiring
-   Connects the input field, mood chips and result grid to engine.js
-   ============================================================ */
+/* NameForge — UI */
 
-const els = {
-  input: document.getElementById("nameInput"),
-  forgeBtn: document.getElementById("forgeBtn"),
-  results: document.getElementById("results"),
-  empty: document.getElementById("emptyState"),
-  chips: document.querySelectorAll(".chip"),
-  toast: document.getElementById("toast"),
-};
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("nameInput");
+  const forgeBtn = document.getElementById("forgeBtn");
+  const results = document.getElementById("results");
+  const emptyState = document.getElementById("emptyState");
+  const toast = document.getElementById("toast");
+  const chips = document.querySelectorAll(".chip");
 
-let activeMood = "all";
+  let activeMood = "all";
 
-els.chips.forEach((chip) => {
-  chip.addEventListener("click", () => {
-    els.chips.forEach((c) => c.classList.remove("chip--active"));
-    chip.classList.add("chip--active");
-    activeMood = chip.dataset.mood;
-    if (els.input.value.trim()) render();
-  });
-});
+  function showToast(message = "Copied to clipboard") {
+    if (!toast) return;
 
-function render() {
-  const name = els.input.value.trim();
+    toast.textContent = message;
+    toast.classList.add("toast--show");
 
-  if (!name) {
-    els.results.innerHTML = "";
-    els.empty.style.display = "block";
-    return;
+    clearTimeout(showToast.timer);
+
+    showToast.timer = setTimeout(() => {
+      toast.classList.remove("toast--show");
+    }, 1600);
   }
 
-  els.empty.style.display = "none";
-  const variants = generateStyles(name, 24, activeMood);
+  function render() {
+    const name = input.value.trim();
 
-  els.results.innerHTML = variants
-    .map(
-      (v, i) => `
-      <button class="tile" data-value="${encodeURIComponent(v)}" style="--i:${i}">
-        <span class="tile__glyph">${v}</span>
-        <span class="tile__copy">Copy</span>
-      </button>`
-    )
-    .join("");
-}
+    if (!name) {
+      results.innerHTML = "";
+      emptyState.style.display = "block";
+      return;
+    }
 
-els.forgeBtn.addEventListener("click", render);
+    const variants = generateStyles(name, 24, activeMood);
 
-els.input.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") render();
+    emptyState.style.display = "none";
+
+    results.innerHTML = variants
+      .map((value, index) => {
+        const encoded = encodeURIComponent(value);
+
+        return `
+          <button
+            type="button"
+            class="tile"
+            data-value="${encoded}"
+            style="--i:${index}"
+          >
+            <span class="tile__glyph">${value}</span>
+            <span class="tile__copy">Copy</span>
+          </button>
+        `;
+      })
+      .join("");
+  }
+
+  forgeBtn.addEventListener("click", render);
+
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      render();
+    }
+  });
+
+  chips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      chips.forEach((item) => {
+        item.classList.remove("chip--active");
+      });
+
+      chip.classList.add("chip--active");
+
+      activeMood = chip.dataset.mood || "all";
+
+      if (input.value.trim()) {
+        render();
+      }
+    });
+  });
+
+  results.addEventListener("click", async (event) => {
+    const tile = event.target.closest(".tile");
+
+    if (!tile) return;
+
+    const value = decodeURIComponent(tile.dataset.value);
+
+    try {
+      await navigator.clipboard.writeText(value);
+      showToast();
+    } catch (error) {
+      // Fallback for browsers where clipboard API is unavailable
+      const textarea = document.createElement("textarea");
+
+      textarea.value = value;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+
+      document.body.appendChild(textarea);
+
+      textarea.select();
+
+      try {
+        document.execCommand("copy");
+        showToast();
+      } catch (copyError) {
+        showToast("Copy failed");
+      }
+
+      textarea.remove();
+    }
+  });
+
+  // Keep the input empty when the page first loads.
+  input.value = "";
 });
-
-els.results.addEventListener("click", (e) => {
-  const tile = e.target.closest(".tile");
-  if (!tile) return;
-  const value = decodeURIComponent(tile.dataset.value);
-  navigator.clipboard.writeText(value).then(() => showToast());
-});
-
-function showToast() {
-  els.toast.classList.add("toast--show");
-  clearTimeout(showToast._t);
-  showToast._t = setTimeout(() => els.toast.classList.remove("toast--show"), 1600);
-}
-
-// Seed the page with a starter word so the grid never looks broken on load.
-els.input.value = "";
