@@ -1,65 +1,83 @@
-/* ============================================================
-   NameForge — Engine
-   Builds fresh name-style combinations from the data in data.js.
-   Pure functions: no DOM access here, so it stays easy to test.
-   ============================================================ */
+/* NameForge — Engine */
 
 function pick(list) {
   return list[Math.floor(Math.random() * list.length)];
 }
 
-// Apply one font map to a raw string, character by character.
 function applyFont(text, map) {
-  const lowerAlpha = "abcdefghijklmnopqrstuvwxyz";
-  const upperAlpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let out = "";
-  for (const ch of text) {
-    const li = lowerAlpha.indexOf(ch);
-    const ui = upperAlpha.indexOf(ch);
-    if (li !== -1) out += map.a[li] || ch;
-    else if (ui !== -1) out += map.A[ui] || ch;
-    else out += ch;
+  const lower = "abcdefghijklmnopqrstuvwxyz";
+  const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  let output = "";
+
+  for (const char of text) {
+    const lowerIndex = lower.indexOf(char);
+    const upperIndex = upper.indexOf(char);
+
+    if (lowerIndex >= 0) {
+      output += map.a[lowerIndex] || char;
+    } else if (upperIndex >= 0) {
+      output += map.A[upperIndex] || char;
+    } else {
+      output += char;
+    }
   }
-  return out;
+
+  return output;
 }
 
-// Build a single styled variant. `mood` narrows which decoration set is used.
-function buildVariant(rawName, mood) {
+function buildVariant(name, mood) {
   const font = pick(FONT_MAPS);
-  const set = DECORATIONS[mood] || pick(Object.values(DECORATIONS));
-  const styledName = applyFont(rawName, font);
+  const decorations =
+    mood === "all"
+      ? pick(Object.values(DECORATIONS))
+      : DECORATIONS[mood];
 
-  const pattern = Math.floor(Math.random() * 5);
-  const left = pick(set);
-  const right = pick(set);
+  const styled = applyFont(name, font);
+
+  const left = pick(decorations);
+  const right = pick(decorations);
+  const pattern = Math.floor(Math.random() * 6);
 
   switch (pattern) {
     case 0:
-      return `${left} ${styledName} ${right}`;
+      return `${left} ${styled} ${right}`;
+
     case 1:
-      return `${left}${styledName}${right}`;
+      return `${left}${styled}${right}`;
+
     case 2:
-      return `${left}${right} ${styledName} ${right}${left}`;
+      return `${left} ${right} ${styled} ${right} ${left}`;
+
     case 3:
-      return `${styledName} ${left}${right}`;
+      return `${styled} ${left}${right}`;
+
+    case 4:
+      return `${left}${styled}`;
+
+    case 5:
+      return `${styled}${right}`;
+
     default:
-      return `${left}${styledName}`;
+      return styled;
   }
 }
 
-// Public entry point: generate `count` unique-ish variants for a name.
 function generateStyles(rawName, count = 24, mood = "all") {
-  const clean = rawName.trim();
-  if (!clean) return [];
+  const name = String(rawName || "").trim();
+
+  if (!name) {
+    return [];
+  }
 
   const results = new Set();
-  const moods = mood === "all" ? MOOD_NAMES : [mood];
-  let guard = 0;
 
-  while (results.size < count && guard < count * 8) {
-    const m = pick(moods);
-    results.add(buildVariant(clean, m));
-    guard++;
+  let attempts = 0;
+  const maxAttempts = count * 20;
+
+  while (results.size < count && attempts < maxAttempts) {
+    results.add(buildVariant(name, mood));
+    attempts++;
   }
 
   return Array.from(results);
