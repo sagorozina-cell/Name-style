@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NameForge — Turn your name into stylish symbols &amp; fonts</title>
+<meta name="description" content="Type any name and NameForge forges hundreds of fresh stylish combinations with symbols and unicode fonts — for Free Fire, PUBG, Instagram bios and gaming tags. Free, instant, no sign-up.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a href="/" class="wordmark">Name<span>Forge</span></a>
+    <nav class="nav">
+      <a href="#generator">Generator</a>
+      <a href="#how">How it works</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero" id="generator">
+    <div class="wrap hero__inner">
+      <p class="hero__kicker">Free nickname &amp; stylish text forge</p>
+      <h1 class="hero__title">Strike your name into<br>a hundred new shapes.</h1>
+      <p class="hero__sub">Type a name once. NameForge combines unicode fonts, symbols and ornaments on the spot — a fresh set every time you strike the anvil.</p>
+
+      <div class="forge">
+        <input
+          id="nameInput"
+          class="forge__input"
+          type="text"
+          maxlength="24"
+          placeholder="Type your name…"
+          autocomplete="off"
+        >
+        <button id="forgeBtn" class="forge__btn">Forge names</button>
+      </div>
+
+      <div class="chips" role="group" aria-label="Style mood">
+        <button class="chip chip--active" data-mood="all">All moods</button>
+        <button class="chip" data-mood="gaming">Gaming</button>
+        <button class="chip" data-mood="cute">Cute</button>
+        <button class="chip" data-mood="royal">Royal</button>
+        <button class="chip" data-mood="minimal">Minimal</button>
+        <button class="chip" data-mood="wild">Wild</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="result-section">
+    <div class="wrap">
+      <p id="emptyState" class="empty-state">Your forged names will appear here — tap a tile to copy it.</p>
+      <div id="results" class="results"></div>
+    </div>
+  </section>
+
+  <section class="how" id="how">
+    <div class="wrap">
+      <h2 class="section-title">How the forge works</h2>
+      <div class="how__grid">
+        <div class="how__step">
+          <span class="how__mark">Type</span>
+          <p>Enter any name — your gamertag, brand, or nickname. Letters, numbers, spaces all work.</p>
+        </div>
+        <div class="how__step">
+          <span class="how__mark">Strike</span>
+          <p>The engine mixes unicode letterforms with symbols and ornaments into fresh combinations.</p>
+        </div>
+        <div class="how__step">
+          <span class="how__mark">Copy</span>
+          <p>Tap any result to copy it instantly — paste it straight into Free Fire, Instagram, Discord, anywhere.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq" id="faq">
+    <div class="wrap">
+      <h2 class="section-title">Questions people ask</h2>
+
+      <details class="faq__item" open>
+        <summary>Is NameForge free to use?</summary>
+        <p>Yes. Generating and copying styled names costs nothing and doesn't require an account.</p>
+      </details>
+
+      <details class="faq__item">
+        <summary>Will these names work in Free Fire, PUBG or Instagram?</summary>
+        <p>Most platforms accept unicode characters in names and bios. A few very long ornament combinations may be trimmed by character limits, so shorter results tend to be the safest bet for in-game names.</p>
+      </details>
+
+      <details class="faq__item">
+        <summary>Why do I get different results each time?</summary>
+        <p>NameForge doesn't pull from a fixed list — it combines fonts and symbols live, so pressing "Forge names" again gives you a new set to choose from.</p>
+      </details>
+
+      <details class="faq__item">
+        <summary>Some symbols show as boxes on my phone. Why?</summary>
+        <p>That means your device's font doesn't include that particular unicode character yet. The text is still valid and will usually display correctly once pasted into apps like Instagram or Free Fire.</p>
+      </details>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <a href="/" class="wordmark wordmark--small">Name<span>Forge</span></a>
+    <nav class="footer-nav">
+      <a href="about.html">About</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <p class="footer-note">© 2026 NameForge</p>
+  </div>
+</footer>
+
+<div id="toast" class="toast">Copied to clipboard</div>
+
+<script src="js/data.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
